@@ -221,13 +221,13 @@ const SearchOverlay = ({ onClose }) => {
                     id="mobile-search-input"
                     type="text"
                     placeholder="Search for products..."
-                    className="w-full h-full bg-transparent focus:outline-none text-gray-100 dark:text-gray-200"
+                    className="w-full h-full bg-transparent focus:outline-none text-slate-800 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400"
                 />
                 <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 ml-2">
                     {theme === 'light' ? <Moon className="w-5 h-5"/> : <Sun className="w-5 h-5"/>}
                 </button>
-                <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-200 ml-2">
-                    <X className="w-6 h-6 text-gray-300" />
+                <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 ml-2">
+                    <X className="w-6 h-6 text-slate-600 dark:text-slate-300" />
                 </button>
             </div>
             {/* You can add search results or suggestions here */}
@@ -240,7 +240,16 @@ const SearchOverlay = ({ onClose }) => {
 
 // Custom hook for managing and applying the theme
 function useTheme() {
-    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+    const [theme, setTheme] = useState(() => {
+        // Check localStorage first, then system preference, default to dark
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) return savedTheme;
+        
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+        }
+        return 'light';
+    });
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -250,7 +259,7 @@ function useTheme() {
     }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(theme === 'light' ? 'dark' : 'light');
+        setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
     };
 
     return { theme, toggleTheme };
