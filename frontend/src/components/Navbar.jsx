@@ -241,7 +241,7 @@ const SearchOverlay = ({ onClose }) => {
 // Custom hook for managing and applying the theme
 function useTheme() {
     const [theme, setTheme] = useState(() => {
-        // Check localStorage first, then system preference, default to dark
+        // Check localStorage first, then system preference, default to light
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) return savedTheme;
         
@@ -252,9 +252,9 @@ function useTheme() {
     });
 
     useEffect(() => {
-        const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-        root.classList.add(theme);
+        // Apply theme to html element
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
 
