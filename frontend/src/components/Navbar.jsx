@@ -61,7 +61,7 @@ const DesktopNavbar = () => {
         {/* Header with Logo and Collapse Toggle */}
         <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
           <span className={`text-xl font-bold transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>BrandName</span>
-          <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 flex-shrink-0">
+          <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 ">
             {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
           </button>
         </div>
