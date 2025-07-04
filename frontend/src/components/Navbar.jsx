@@ -150,7 +150,7 @@ const MobileNavbar = () => {
     return (
         <div className="md:hidden">
             {/* Top Logo */}
-            <header className="fixed top-0 left-0 right-0 h-14 bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-40 border-b border-slate-200 dark:border-slate-800">
+            <header className="fixed top-0 left-0 right-0 h-14 px-4 bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-start z-40 border-b border-slate-200 dark:border-slate-800">
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">BrandName</h1>
             </header>
 
@@ -174,7 +174,7 @@ const MobileNavbar = () => {
             {activeMenu === 'search' && <SearchOverlay onClose={closeAllPopups} />}
 
             {/* This empty div prevents content from being hidden behind the fixed bottom navbar */}
-            <div className="h-16"></div> 
+            <div className="h-auto"></div> 
         </div>
     );
 };
@@ -190,7 +190,7 @@ const MobileNavItem = ({ icon: Icon, label, onClick, href, isActive }) => (
 // Popup menu for Mobile (Category & More)
 const MobilePopup = ({ items,  }) => {
     return (
-        <div className="absolute bottom-20 left-1/2 w-[90vw] max-w-sm bg-slate-200 dark:bg-slate-800 rounded-2xl shadow-lg p-4 z-40 animate-slide-up">
+        <div className="fixed bottom-20 left-1/2 w-[90vw] max-w-sm bg-slate-200 dark:bg-slate-800 rounded-2xl shadow-lg p-4 z-40 animate-slide-up">
             <div className="grid grid-cols-4 gap-4">
                 {items.map(item => (
                     <a key={item.name} href={item.path} className="flex flex-col items-center justify-center text-center text-slate-700 dark:text-slate-300 rounded-lg p-2 hover:bg-slate-300 dark:hover:bg-slate-700">
