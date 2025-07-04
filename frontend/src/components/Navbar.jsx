@@ -60,8 +60,8 @@ const DesktopNavbar = () => {
       <div className="flex flex-col h-full">
         {/* Header with Logo and Collapse Toggle */}
         <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-          {!isCollapsed && <span className="text-xl font-bold">BrandName</span>}
-          <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800">
+          <span className={`text-xl font-bold transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>BrandName</span>
+          <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 flex-shrink-0">
             {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
           </button>
         </div>
@@ -74,7 +74,7 @@ const DesktopNavbar = () => {
                 <div className="relative">
                   <div className={`flex items-center p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer`}>
                       <Search className="flex-shrink-0 w-6 h-6" />
-                      {!isCollapsed && <span className="ml-4 font-medium flex-1">Search</span>}
+                      <span className={`ml-4 font-medium flex-1 transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>Search</span>
                   </div>
                 </div>
             </li>
@@ -84,9 +84,9 @@ const DesktopNavbar = () => {
                 <div onClick={handleCategoryClick} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer">
                     <div className="flex items-center">
                         <LayoutGrid className="flex-shrink-0 w-6 h-6" />
-                        {!isCollapsed && <span className="ml-4 font-medium">Category</span>}
+                        <span className={`ml-4 font-medium transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>Category</span>
                     </div>
-                    {!isCollapsed && <ChevronDown className={`transition-transform duration-200 ${isCategoryOpen ? 'rotate-180' : ''}`} />}
+                    <ChevronDown className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'} ${isCategoryOpen ? 'rotate-180' : ''}`} />
                 </div>
                 {/* The rendering logic for the dropdown remains the same */}
                 {isCategoryOpen && !isCollapsed && (
@@ -107,7 +107,7 @@ const DesktopNavbar = () => {
                 <li key={item.name}>
                     <a href={item.path} className="flex items-center p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800">
                         <item.icon className="flex-shrink-0 w-6 h-6" />
-                        {!isCollapsed && <span className="ml-4 font-medium">{item.name}</span>}
+                        <span className={`ml-4 font-medium transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>{item.name}</span>
                     </a>
                 </li>
             ))}
@@ -119,14 +119,14 @@ const DesktopNavbar = () => {
           <ul className="space-y-2">
             <li>
               <button onClick={toggleTheme} className="flex items-center w-full p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800">
-                {theme === 'light' ? <Moon className="w-6 h-6"/> : <Sun className="w-6 h-6"/>}
-                {!isCollapsed && <span className="ml-4 font-medium">Toggle Theme</span>}
+                {theme === 'light' ? <Moon className="w-6 h-6 flex-shrink-0"/> : <Sun className="w-6 h-6 flex-shrink-0"/>}
+                <span className={`ml-4 font-medium transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>Toggle Theme</span>
               </button>
             </li>
             <li>
               <a href="#" className="flex items-center p-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50">
-                <LogOut className="w-6 h-6" />
-                {!isCollapsed && <span className="ml-4 font-medium">Logout</span>}
+                <LogOut className="w-6 h-6 flex-shrink-0" />
+                <span className={`ml-4 font-medium transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>Logout</span>
               </a>
             </li>
           </ul>
