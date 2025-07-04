@@ -56,7 +56,7 @@ const DesktopNavbar = () => {
   };
 
   return (
-    <aside className={`sticky top-0 left-0 h-dvh bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'}`}>
+    <aside className={`sticky top-0 left-0 h-dvh bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-all duration-300 ease-in-out z-50 overflow-hidden ${isCollapsed ? 'w-20' : 'w-64'}`}>
       <div className="flex flex-col h-full">
         {/* Header with Logo and Collapse Toggle */}
         <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
