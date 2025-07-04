@@ -3,7 +3,6 @@ import {
   Home, LayoutGrid, Search, ShoppingCart, MoreHorizontal, ChevronDown, ChevronLeft,
   ChevronRight, Sun, Moon, X, Tv, Smartphone, Laptop, Settings, User, LogOut
 } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
 
 // Main component 
 export default function Navbar() {
@@ -238,3 +237,30 @@ const SearchOverlay = ({ onClose }) => {
         </div>
     );
 };
+
+// Custom hook for managing and applying the theme
+function useTheme() {
+    const [theme, setTheme] = useState(() => {
+        // Check localStorage first, then system preference, default to dark
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) return savedTheme;
+        
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+        }
+        return 'light';
+    });
+
+    useEffect(() => {
+        const root = window.document.documentElement;
+        root.classList.remove('light', 'dark');
+        root.classList.add(theme);
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    };
+
+    return { theme, toggleTheme };
+}
