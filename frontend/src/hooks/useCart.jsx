@@ -57,7 +57,7 @@ export function useCartGet(){
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Token 45a60f1b22f8ded37cffc726036969e27c812969'
+            Authorization: `Token ${localStorage.getItem('token')}`
         },
         signal: controller.signal });
 
@@ -123,10 +123,12 @@ export function useCartDelete() {
       const json = await res.json();
       setData(json);
       setSuccess(true);
+      return json; // Return the response for potential use
 
     } catch (err) {
       setError(err.message);
       setSuccess(false);
+      throw err; // Re-throw so calling code can handle the error
     } finally {
       setLoading(false);
     }
