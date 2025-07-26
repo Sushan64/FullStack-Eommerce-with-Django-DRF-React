@@ -3,6 +3,10 @@ import {
   Home, LayoutGrid, Search, ShoppingCart, MoreHorizontal, ChevronDown, ChevronLeft,
   ChevronRight, Sun, Moon, X, Tv, Smartphone, Laptop, Settings, User, LogOut
 } from 'lucide-react';
+import { Link } from 'react-router-dom'
+import useTheme from '../hooks/useTheme'
+
+
 
 // Main component 
 export default function Navbar() {
@@ -24,22 +28,22 @@ export default function Navbar() {
 
 // Data for navigation items
 const navItems = [
-  { name: 'Home', icon: Home, path: '#' },
-  { name: 'Cart', icon: ShoppingCart, path: '#' },
-  { name: 'Profile', icon: User, path: '#' },
-  { name: 'Settings', icon: Settings, path: '#' },
-];
+  { name: 'Home', icon: Home, path: '/' },
+  { name: 'Cart', icon: ShoppingCart, path: '/cart' },
+  { name: 'Profile', icon: User, path: '/login' },
+  { name: 'Settings', icon: Settings, path: '.' },
+]
 
 const categoryItems = [
-    { name: 'TV', icon: Tv, path: '#' },
-    { name: 'Mobile', icon: Smartphone, path: '#' },
-    { name: 'Laptop', icon: Laptop, path: '#' },
+    { name: 'TV', icon: Tv, path: '/category/Grocery'},
+    { name: 'Mobile', icon: Smartphone, path: '/category/Tech'},
+    { name: 'Laptop', icon: Laptop, path: '.' },
 ];
 
 
 // --- NAVBAR COMPONENT ---
 const DesktopNavbar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
@@ -60,7 +64,7 @@ const DesktopNavbar = () => {
       <div className="flex flex-col h-full">
         {/* Header with Logo and Collapse Toggle */}
         <div className={`flex items-center border-b border-slate-200 dark:border-slate-700 ${isCollapsed ? 'justify-center p-4' : 'justify-between p-4'}`}>
-          <span className={`text-xl font-bold transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>BrandName</span>
+          <span className={`text-xl font-bold transition-all whitespace-nowrap duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 '}`}>Sushan ko Dokan</span>
           <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 flex-shrink-0">
             {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
           </button>
@@ -93,10 +97,10 @@ const DesktopNavbar = () => {
                     <ul className="mt-1 ml-6 space-y-1">
                         {categoryItems.map(item => (
                             <li key={item.name}>
-                                <a href={item.path} className="flex items-center p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-sm">
+                                <Link to={item.path} className="flex items-center p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-sm">
                                     <item.icon className="w-5 h-5 mr-3" />
                                     {item.name}
-                                </a>
+                                </Link>
                             </li>
                         ))}
                     </ul>
@@ -105,10 +109,10 @@ const DesktopNavbar = () => {
              {/* Other Nav Items */}
              {navItems.map(item => (
                 <li key={item.name}>
-                    <a href={item.path} className="flex items-center p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800">
+                    <Link to={item.path} className="flex items-center p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800">
                         <item.icon className="flex-shrink-0 w-6 h-6" />
                         <span className={`ml-4 font-medium transition-all duration-300 ease-in-out ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>{item.name}</span>
-                    </a>
+                    </Link>
                 </li>
             ))}
           </ul>
@@ -151,15 +155,15 @@ const MobileNavbar = () => {
         <div className="md:hidden">
             {/* Top Logo */}
             <header className="fixed top-0 left-0 right-0 h-14 px-4 bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-start z-40 border-b border-slate-200 dark:border-slate-800">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">BrandName</h1>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Sushan ko Pasal</h1>
             </header>
 
             {/* Bottom Navigation Bar */}
             <nav className="fixed bottom-0 left-0 right-0 h-16 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around items-center z-50">
-                <MobileNavItem icon={Home} label="Home" href="#" />
+                <MobileNavItem icon={Home} label="Home" href="/" />
                 <MobileNavItem icon={LayoutGrid} label="Category" onClick={() => handleMenuClick('category')} isActive={activeMenu === 'category'} />
                 <MobileNavItem icon={Search} label="Search" onClick={() => handleMenuClick('search')} isActive={activeMenu === 'search'} />
-                <MobileNavItem icon={ShoppingCart} label="Cart" href="#" />
+                <MobileNavItem icon={ShoppingCart} label="Cart" href="/cart/" />
                 <MobileNavItem icon={MoreHorizontal} label="More" onClick={() => handleMenuClick('more')} isActive={activeMenu === 'more'} />
             </nav>
 
@@ -181,25 +185,38 @@ const MobileNavbar = () => {
 
 // Reusable component for mobile nav items
 const MobileNavItem = ({ icon: Icon, label, onClick, href, isActive }) => (
-    <a href={href} onClick={onClick} className={`flex flex-col items-center justify-center w-full h-full text-xs transition-colors duration-200 ${isActive ? 'text-indigo-500' : 'text-slate-500 dark:text-slate-400'}`}>
+    <Link to={href} onClick={onClick} className={`flex flex-col items-center justify-center w-full h-full text-xs transition-colors duration-200 ${isActive ? 'text-indigo-500' : 'text-slate-500 dark:text-slate-400'}`}>
         <Icon className="w-6 h-6 mb-1" />
         <span>{label}</span>
-    </a>
+    </Link>
 );
 
 // Popup menu for Mobile (Category & More)
-const MobilePopup = ({ items,  }) => {
+const MobilePopup = ({ items }) => {
+    const { theme, toggleTheme } = useTheme();
+    
     return (
         <div className="fixed bottom-20 left-1/2 w-[90vw] max-w-sm bg-slate-200 dark:bg-slate-800 rounded-2xl shadow-lg p-4 z-40 animate-slide-up">
             <div className="grid grid-cols-4 gap-4">
+                
                 {items.map(item => (
-                    <a key={item.name} href={item.path} className="flex flex-col items-center justify-center text-center text-slate-700 dark:text-slate-300 rounded-lg p-2 hover:bg-slate-300 dark:hover:bg-slate-700">
+                    <Link key={item.name} to={item.path} className="flex flex-col items-center justify-center text-center text-slate-700 dark:text-slate-300 rounded-lg p-2 hover:bg-slate-300 dark:hover:bg-slate-700">
                         <div className="p-3 bg-slate-300 dark:bg-slate-700 rounded-full mb-2">
                            <item.icon className="w-5 h-5"/>
                         </div>
                         <span className="text-xs font-medium">{item.name}</span>
-                    </a>
+                    </Link>
                 ))}
+                
+                {/* Toggle Theme */}
+                { items === navItems && (
+                <span className="flex flex-col items-center justify-center text-center text-slate-700 dark:text-slate-300 rounded-lg p-2 hover:bg-slate-300 dark:hover:bg-slate-700">
+                <div className="p-3 bg-slate-300 dark:bg-slate-700 rounded-full mb-2">
+                    <span onClick={toggleTheme}> {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                    </span>
+                </div>
+                    <span className="text-xs font-medium">Theme</span>
+                </span> )}
             </div>
         </div>
     )
@@ -207,7 +224,7 @@ const MobilePopup = ({ items,  }) => {
 
 // Full-screen Search Overlay for Mobile
 const SearchOverlay = ({ onClose }) => {
-    const { theme, toggleTheme } = useTheme();
+    
 
     // Focus the input when the component mounts
     useEffect(() => {
@@ -223,9 +240,7 @@ const SearchOverlay = ({ onClose }) => {
                     placeholder="Search for products..."
                     className="w-full h-full bg-transparent focus:outline-none text-slate-800 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400"
                 />
-                <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 ml-2">
-                    {theme === 'light' ? <Moon className="w-5 h-5"/> : <Sun className="w-5 h-5"/>}
-                </button>
+                
                 <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 ml-2">
                     <X className="w-6 h-6 text-slate-600 dark:text-slate-300" />
                 </button>
@@ -237,30 +252,3 @@ const SearchOverlay = ({ onClose }) => {
         </div>
     );
 };
-
-// Custom hook for managing and applying the theme
-function useTheme() {
-    const [theme, setTheme] = useState(() => {
-        // Check localStorage first, then system preference, default to light
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) return savedTheme;
-        
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return 'dark';
-        }
-        return 'light';
-    });
-
-    useEffect(() => {
-        // Apply theme to html element
-        document.documentElement.classList.remove('light', 'dark');
-        document.documentElement.classList.add(theme);
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
-    const toggleTheme = () => {
-        setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-    };
-
-    return { theme, toggleTheme };
-}

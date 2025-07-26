@@ -1,17 +1,20 @@
-import API from '../components/Api';
+import useAPI from '../components/Api';
+import { Link } from 'react-router-dom';
 
-export default function Product(){
-  const {data, error} = API();
-  const BASE_URL = "https://77225b06-8bb0-4de2-843f-75ac4721ae65-00-gz4u5a1hikve.sisko.replit.dev/"
+export default function Product({ path = ''}){
+  const {data, loading, error} = useAPI(path);
+  const BASE_URL = `${import.meta.env.VITE_BASE_URL}/`
   if (error) return <p>Error: {error}</p>
+  if (loading) return <p>Loading...</p>
+  
   return(
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4 ">
       {Array.isArray(data) && data.map((item, key)=>(
-      <div key={key} className="bg-indigo-500 text-black h-auto w-full rounded-md bg-white/30 backdrop-blur-md shadow-lg border border-white/20 p-3">
-        <img src={`${BASE_URL}${item.image}`} />
+      <div key={key} className="bg-indigo-500 text-black h-auto w-full rounded-md bg-white/30 backdrop-blur-md shadow-lg border border-white/20 px-3 pt-2">
+        <img className="h-1/2 w-full rounded-md" src={`${BASE_URL}${item.image}`} />
         <div>
-          <h3 className="font-bold">{item.name}</h3>
-          <p>Rs. {item.price}</p>
+          <h3 className="font-bold text-gray-500 line-clamp-2 pt-2 dark:text-gray-200"><Link to={`/product/${item.slug}`}> {item.name}</Link></h3>
+          <p className="text-gray-500 dark:text-gray-200 mt-4">Rs. {item.price}</p>
         </div>
       </div>
       ))}
