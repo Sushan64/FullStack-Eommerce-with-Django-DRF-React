@@ -58,12 +58,16 @@ class AddToCartApiView(APIView):
 
 class CartItemDelete(APIView):
   permission_classes = [IsAuthenticated]
-  authentication_class = [TokenAuthentication]
+  authentication_classes = [TokenAuthentication]
   def delete(self, request, id):
     try:
-      deleted, _ = models.CartItems.objects.filter(id=id).delete()
+      # Only allow users to delete their own cart items
+      deleted, _ = models.CartItems.objects.filter(
+        id=id, 
+        cart__user=request.user
+      ).delete()
       if deleted == 0:
-        return Response({'success':False, 'failed': 'Item Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'success':False, 'error': 'Item Not Found or Access Denied'}, status=status.HTTP_404_NOT_FOUND)
       return Response({'success':True, 'message': 'Item Removed from Cart'}, status=200)
     except Exception as e:
       return Response({'success':False, 'error': f"Failed To Remove from Cart: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
