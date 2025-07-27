@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 def home(request):
@@ -56,6 +58,7 @@ class AddToCartApiView(APIView):
     return Response(cart_serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CartItemDelete(APIView):
   permission_classes = [IsAuthenticated]
   authentication_classes = [TokenAuthentication]
