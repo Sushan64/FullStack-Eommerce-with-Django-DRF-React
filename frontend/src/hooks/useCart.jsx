@@ -57,7 +57,7 @@ export function useCartGet(){
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Token 45a60f1b22f8ded37cffc726036969e27c812969'
+            Authorization : `Token ${localStorage.getItem('token')}`
         },
         signal: controller.signal });
 
@@ -100,7 +100,7 @@ export function useCartDelete() {
     setSuccess(false);
 
     try {
-      const fullUrl = `${BASE_URL}/cart/delete/${itemID}`;
+      const fullUrl = `${BASE_URL}/cart/delete/${itemID}/`;
       const res = await fetch(fullUrl, {
         method: 'DELETE',
         headers: {
@@ -109,24 +109,17 @@ export function useCartDelete() {
       });
 
       if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Delete failed:', {
-          status: res.status,
-          statusText: res.statusText,
-          response: errorText,
-          url: fullUrl,
-          itemID: itemID
-        });
         throw new Error(`Failed to remove: ${res.statusText}`);
       }
 
       const json = await res.json();
       setData(json);
       setSuccess(true);
-
+      return json
     } catch (err) {
       setError(err.message);
       setSuccess(false);
+      throw err;
     } finally {
       setLoading(false);
     }

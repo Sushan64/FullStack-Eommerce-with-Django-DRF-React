@@ -1,13 +1,13 @@
 import {Row, Col, Flex, Image} from 'antd';
 import { useState, useEffect, useRef } from 'react'
 
-export default function CartItem({ name, price, quantity, image, getTotalPrice, initialTotalPrice, onDelete}){
+export default function CartItem({ name, price, quantity, image, getTotalPrice, selected_attributes, onDelete}){
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [totalItemPrice, setTotalItemPrice] = useState(price * quantity);
   const [quantities, setQuantities] = useState(quantity);
   
   const prevItemPriceRef = useRef(price*quantity)
-
+  
   const increase = () =>{
     const newQuantity = quantities + 1;
     setQuantities(newQuantity);
@@ -37,7 +37,10 @@ export default function CartItem({ name, price, quantity, image, getTotalPrice, 
               <div>
                 <h3 className="text-sm sm:text-base font-semibold">{name}</h3>
                 <p className="text-[13px] font-medium mt-2 flex items-center gap-2">
-                  Selected: <span className="inline-block w-4 h-4 rounded-sm bg-[#ac7f48]"></span>
+                  Selected: {Object.entries(selected_attributes).map(([key, value])=>(
+                   <span key={key} className="inline-block w-auto px-1 rounded-sm bg-[#ac7f48]">{value}</span>
+                  ))
+                  }
                 </p>
               </div>
               <div className="mt-auto">

@@ -37,7 +37,7 @@ class AddToCartApiView(APIView):
   def post(self, request):
     product_id = request.data.get('product_id')
     quantity= int(request.data.get('quantity', 1))
-    selected_attributes = request.data.get('selected_attributes', {})
+    selected_attributes = request.data.get('selected_attributes')
     product = models.Product.objects.get(id=product_id)
     cart, _ = models.Cart.objects.get_or_create(user=request.user)
     item, created = models.CartItems.objects.get_or_create(cart=cart, product=product)
@@ -55,15 +55,14 @@ class AddToCartApiView(APIView):
     cart_serializer = serializer.CartSerializer(cart)
     return Response(cart_serializer.data)
 
-
 class CartItemDelete(APIView):
   permission_classes = [IsAuthenticated]
-  authentication_class = [TokenAuthentication]
+  authentication_classes = [TokenAuthentication]
   def delete(self, request, id):
     try:
-      deleted, _ = models.CartItems.objects.filter(id=id).delete()
+      deleted, _ = models.CartItems.objects.filter(id=id, cart__user=request.user).delete()
       if deleted == 0:
-        return Response({'success':False, 'failed': 'Item Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'success':False, 'error': 'Item Not Found or Access Denied'}, status=status.HTTP_404_NOT_FOUND)
       return Response({'success':True, 'message': 'Item Removed from Cart'}, status=200)
     except Exception as e:
       return Response({'success':False, 'error': f"Failed To Remove from Cart: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

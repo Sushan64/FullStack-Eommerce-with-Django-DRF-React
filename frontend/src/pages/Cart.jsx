@@ -7,8 +7,9 @@ export default function Cart(){
   const {data, loading, error} = useCartGet();
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0)
-  const { deleteItem, delData,delSuccess, delLoading, delError } = useCartDelete();
+  const { deleteItem, delData, delSuccess, delLoading, delError } = useCartDelete();
   const [ messageApi, contextHolder ] = message.useMessage();
+  const [deletingItemId, setDeletingItemId ] = useState(null)
   
   const getTotalPrice = (diff) =>{
     setTotalPrice((prev)=>(prev + diff))
@@ -21,23 +22,27 @@ export default function Cart(){
     }
   },[data])
 
+  // Change Total Price
   useEffect(() => {
-  if (cartItems.length > 0) {
+    if (cartItems.length >= 0) {
     const initialTotal = cartItems.reduce((acc, item) => acc + Number(item.product.price) * Number(item.quantity), 0);
     setTotalPrice(initialTotal);
+  } else{
+        setTotalPrice(0)
   }
 }, [cartItems]);
 
 // Handle delete success
   useEffect(()=>{
-    if (delSuccess){
-      setCartItems((prev) => prev.filter((item) => item.id !== id));
-      messageApi.open({
+    if (delSuccess && deletingItemId){
+    setCartItems((prev) => prev.filter((item) => item.id !== deletingItemId));
+    messageApi.open({
         type: 'success',
         content: 'Item removed successfully',
       });
+      setDeletingItemId(null);
     }
-  }, [delSuccess])
+  }, [delSuccess, deletingItemId, messageApi])
 
   // Handle delete error
   useEffect(() => {
@@ -46,18 +51,19 @@ export default function Cart(){
         type: 'error',
         content: `Failed to remove: ${delError}`,
       });
+      setDeletingItemId(null)
     }
   }, [delError, messageApi]);
 
-  const handleDelete = (id) => {
-    deleteItem(id);
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  const handleDelete = async (id) => {
+    setDeletingItemId(id);
+    await deleteItem(id)
   }
   
   if (error) return <p>Error: {error}</p>
   if (loading) return <p>Loading...</p>
   if (!data) return <p>Nothing...</p>
-
+  if (cartItems.length === 0) return <p>Nothing in your cart</p>
 
   return(
     <>
@@ -71,7 +77,7 @@ export default function Cart(){
             {cartItems.map((item, index)=>{
       
       return(
-      <CartItem key={index} getTotalPrice={getTotalPrice} initialTotalPrice={totalPrice} onDelete={()=>handleDelete(item.id)} name={item.product.name} quantity={item.quantity} price={item.product.price} image={item.product.image}/>
+      <CartItem key={index} getTotalPrice={getTotalPrice} selected_attributes={item.selected_attributes} onDelete={()=>handleDelete(item.id)} name={item.product.name} quantity={item.quantity} price={item.product.price} image={item.product.image}/>
    )
     })}
               
@@ -102,4 +108,5 @@ export default function Cart(){
       </div>
     </>
   )
+  
 }
