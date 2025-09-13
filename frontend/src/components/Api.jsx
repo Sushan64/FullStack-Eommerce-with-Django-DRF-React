@@ -16,7 +16,6 @@ export default function useApi(path = '') {
 
       try {
         const fullUrl = path ? `${BASE_URL}/${path}/` : `${BASE_URL}/`;
-        console.log('url', fullUrl)
         const res = await fetch(fullUrl, { signal: controller.signal });
 
         if (!res.ok) {
@@ -24,7 +23,7 @@ export default function useApi(path = '') {
         }
 
         const json = await res.json();
-        setData(json);
+        setData(json.results);
       } catch (err) {
         if (err.name !== 'AbortError') {
           setError(err.message);

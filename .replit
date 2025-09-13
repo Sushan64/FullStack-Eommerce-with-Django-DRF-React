@@ -30,3 +30,6 @@ exposeLocalhost = true
 
 [rules.formatter.fileExtensions.".jsx"]
 id = "module:nodejs-20/formatter:prettier"
+
+[agent]
+expertMode = true

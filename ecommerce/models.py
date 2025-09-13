@@ -2,6 +2,10 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import UniqueConstraint
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 # Create your models here.
 
@@ -24,6 +28,19 @@ CHOICES = (
     ('Cloth', 'Cloth'),
 )
 
+class User(AbstractUser):
+  ROLE_CHOICES =(
+    ('consumer', 'Consumer'),
+    ('seller', 'Seller')
+  )
+  role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='consumer')
+
+class Category(models.Model):
+  name = models.CharField(max_length=20, unique=True)
+  
+  def __str__(self):
+    return self.name
+
 class Attribute(models.Model):
   name = models.CharField(max_length=100)
   def __str__(self):
@@ -45,10 +62,11 @@ class AttributeValue(models.Model):
     return f"{self.attribute}:{self.value}"
 
 class Product(models.Model):
+  publisher= models.ForeignKey(User, on_delete=models.CASCADE)
   name = models.CharField(max_length=100)
   image = models.ImageField(upload_to="image/")
-  category = models.CharField(max_length=15, choices=CHOICES, null=True, blank=True)
-  slug = models.SlugField(max_length=10, unique=True, blank=True)
+  category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
+  slug = models.SlugField(max_length=50, unique=True, blank=True)
   description = models.TextField()
   attributes = models.ManyToManyField(AttributeValue)
   free_delivary = models.BooleanField()
@@ -64,7 +82,7 @@ class Product(models.Model):
 
 
 class Cart(models.Model):
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user")
   def __str__(self):
     return f"Cart: {self.user}"
 
@@ -75,3 +93,12 @@ class CartItems(models.Model):
   quantity = models.PositiveIntegerField(default=1)
   def __str__(self):
     return f"CartItems {self.quantity}"
+
+
+class Review(models.Model):
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_review")
+  product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_review")
+  rating = models.IntegerField(null=True, blank=True,
+                               validators=[MinValueValidator(1), MaxValueValidator(5)],
+                              help_text="Enter number between 1 to 5")
+  comment= models.TextField()

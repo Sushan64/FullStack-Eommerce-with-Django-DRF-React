@@ -6,6 +6,10 @@ export default function Home(){
     <>
        <Carousel />
        <Product path="" />
+      <h2 className="text-2xl mt-3" >Tech</h2>
+      <Product path="Tech" />
+      <h2 className="text-2xl mt-3" >Grocery</h2>
+      <Product path="Grocery" />
     </>
   )
 }

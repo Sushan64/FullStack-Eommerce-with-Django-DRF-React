@@ -1,42 +1,46 @@
 import axios from 'axios';
 import {useState, useEffect} from "react"
-
+import useFetchWithAuth from './useFetchWithAuth'
+import {useNavigate} from 'react-router-dom'
 
 const BASE_URL = `${import.meta.env.VITE_BASE_URL}/api`
 
 export default function useCart() {
+  const navigate = useNavigate()
   const addToCart = async (data) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      return { success: false, error: 'User not authenticated' };
+    }
+    const requestBody = {
+      product_id: data.product_id,
+      quantity: data.quantity || 1,
+      selected_attributes: data.attributes,
+    };
 
-    const token = localStorage.getItem('token');
-if (!token) {
-  return { success: false, error: 'User not authenticated' };
-}
-    
     try {
-      const response = await axios.post(
-        `${BASE_URL}/cart/add/`,
-        {
-          product_id: data.product_id,
-          quantity: data.quantity || 1,
-          selected_attributes: data.attributes,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Token ${localStorage.getItem('token')}`,
-          },
+      const response = await useFetchWithAuth(
+        `${BASE_URL}/cart/add/`, {
+          method: 'POST',
+          body: JSON.stringify(requestBody),
         }
       );
-      return { success: true, data: response.data };
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to add to cart: ${response.status} ${errorText}`);
+      }
+
+      const responseData = await response.json();
+      return { success: true, data: responseData };
     } catch (error) {
       console.error('Error adding to cart:', error);
-      return { success: false, error };
+      return { success: false, error: error.message || error };
     }
   };
 
   return { addToCart };
 }
-
 
 export function useCartGet(){
   const [data, setData] = useState(null);
@@ -44,22 +48,13 @@ export function useCartGet(){
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
       try {
         const fullUrl = `${BASE_URL}/cart/add/`
-        const res = await fetch(fullUrl,
-      { 
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization : `Token ${localStorage.getItem('token')}`
-        },
-        signal: controller.signal });
+        const res = await useFetchWithAuth(fullUrl, { method: 'GET', });
 
         if (!res.ok) {
           throw new Error(`Failed to fetch API: ${res.statusText}`);
@@ -68,19 +63,13 @@ export function useCartGet(){
         const json = await res.json();
         setData(json);
       } catch (err) {
-        if (err.name !== 'AbortError') {
           setError(err.message);
-        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-
-    return () => {
-      controller.abort();
-    };
   }, []);
 
   return { data, loading, error };
@@ -98,14 +87,11 @@ export function useCartDelete() {
     setLoading(true);
     setError(null);
     setSuccess(false);
-
+    
     try {
       const fullUrl = `${BASE_URL}/cart/delete/${itemID}/`;
-      const res = await fetch(fullUrl, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Token ${localStorage.getItem('token')}`,
-        }
+      const res = await useFetchWithAuth(fullUrl, {
+        method: 'DELETE'
       });
 
       if (!res.ok) {

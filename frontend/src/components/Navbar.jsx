@@ -11,7 +11,6 @@ import useTheme from '../hooks/useTheme'
 // Main component 
 export default function Navbar() {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
-
   // Effect to update the view based on window size
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth > 768);
@@ -30,7 +29,7 @@ export default function Navbar() {
 const navItems = [
   { name: 'Home', icon: Home, path: '/' },
   { name: 'Cart', icon: ShoppingCart, path: '/cart' },
-  { name: 'Profile', icon: User, path: '/login' },
+  { name: 'Profile', icon: User, path: '/profile' },
   { name: 'Settings', icon: Settings, path: '.' },
 ]
 
@@ -144,13 +143,13 @@ const DesktopNavbar = () => {
 // Mobile Bottom Navbar
 const MobileNavbar = () => {
     const [activeMenu, setActiveMenu] = useState(null); // 'category', 'more', 'search'
-
     const handleMenuClick = (menu) => {
         setActiveMenu(prev => (prev === menu ? null : menu));
     };
 
     const closeAllPopups = () => setActiveMenu(null);
-
+    const { theme, toggleTheme } = useTheme(); // To check the theme only
+    
     return (
         <div className="md:hidden">
             {/* Top Logo */}
@@ -191,10 +190,10 @@ const MobileNavItem = ({ icon: Icon, label, onClick, href, isActive }) => (
     </Link>
 );
 
+
 // Popup menu for Mobile (Category & More)
 const MobilePopup = ({ items }) => {
-    const { theme, toggleTheme } = useTheme();
-    
+      const { theme, toggleTheme } = useTheme();
     return (
         <div className="fixed bottom-20 left-1/2 w-[90vw] max-w-sm bg-slate-200 dark:bg-slate-800 rounded-2xl shadow-lg p-4 z-40 animate-slide-up">
             <div className="grid grid-cols-4 gap-4">
