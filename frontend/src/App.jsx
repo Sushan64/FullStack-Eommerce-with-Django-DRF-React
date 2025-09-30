@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState} from "react";
 import { BrowserRouter, Routes, Route, useNavigate} from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from './components/Navbar'
@@ -14,6 +14,7 @@ import UploadProduct from './pages/UploadProduct'
 import {setNavigator} from './services/navigationService'
 
 
+
 // Custom Navigation
 function NavigationSetter() {
   const navigate = useNavigate()
@@ -27,7 +28,7 @@ function App() {
       <NavigationSetter /> 
     <div className="md:grid md:grid-cols-[auto_1fr] bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Navbar />
-      <main className="pt-20 md:pt-10 md:px-16 px-4 min-h-screen h-auto pb-18 transition-all duration-300 ease-in-out w-full max-w-full overflow-x-hidden">
+      <main className=" pt-20 md:pt-10 md:px-16 px-4 min-h-screen h-auto pb-18 transition-all duration-300 ease-in-out w-full max-w-full overflow-x-hidden">
         
           <Routes>
             <Route path="/" element={<Home />}></Route>

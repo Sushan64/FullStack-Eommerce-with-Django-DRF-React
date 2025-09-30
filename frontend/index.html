@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="dark" lang="en">
+<html class="light" lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -8,12 +8,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Initialize theme before React loads to prevent flash
-      const theme = localStorage.getItem('theme') || 
-        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.classList.add(theme);
-    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

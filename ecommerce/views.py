@@ -12,6 +12,9 @@ from rest_framework import generics, status, viewsets
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.pagination import PageNumberPagination
+from django.contrib.postgres.search import TrigramSimilarity
 
 User = get_user_model()
 # Create your views here.
@@ -19,24 +22,63 @@ def home(request):
   
   return render(request, 'index.html')
 
-@api_view(['GET'])
-def productDetail(request, slug):
-  product = models.Product.objects.get(slug=slug)
-  product_serializer = serializer.ProductSerializer(product)
-  return Response(product_serializer.data)
 
+"""
+We can use RetrieveAPIView on ProductDetail which
+do the things easily. But this time we have to make it
+frontend friendly so using ListAPIView as this return
+the data on 'result' key.
+{
+result: {..data..}
+}
+"""
+
+class ProductDetail(generics.ListAPIView):
+  serializer_class = serializer.ProductSerializer
+  
+  def get_queryset(self):
+    slug = self.kwargs.get('slug')
+    return models.Product.objects.filter(slug=slug)
 
 class CategoryPostView(generics.ListAPIView):
   serializer_class = serializer.ProductSerializer
+
+  class CustomPagination(PageNumberPagination):
+    page_size= 3
+  pagination_class = CustomPagination
   
   def get_queryset(self):
     category= self.kwargs.get('category')
     return models.Product.objects.filter(category__name=category)
+
+class TempSearch(generics.ListAPIView):
+  serializer_class = serializer.ProductSerializer
+  
+  def get_queryset(self):
+    query = self.request.query_params.get('search')
+    result = models.Product.objects.all()
+    if query:
+      result = result.filter(name__icontains=query) | result.filter(description__icontains=query)
+    return result
+
+class Search(generics.ListAPIView):
+  serializer_class =serializer.ProductSerializer
+  
+  def get_queryset(self):
+    query = self.request.query_params.get('search')
+    if query:
+      result = models.Product.objects.annotate(similarity=(TrigramSimilarity('name', query)
+                                               + TrigramSimilarity('description', query))).filter(similarity__gt=0.3).order_by('-similarity')
+      return result
+    return models.Product.objects.all()
     
 
 class ProductAPI(generics.ListCreateAPIView):
   queryset = models.Product.objects.all()
   serializer_class = serializer.ProductSerializer
+  
+  def perform_create(self, serializer):
+    serializer.save(publisher=self.request.user)
 
 class CategoryAPIView(generics.ListAPIView):
   queryset = models.Category.objects.all()
@@ -62,11 +104,11 @@ class AddReviewView(APIView):
     comment = request.data.get('comment')
     rating = request.data.get('rating')
     product = models.Product.objects.get(id=product_id)
-    review, new_created = models.Review.objects.get_or_create(user=request.user, product=product)
-    if not new_created:
-      review.comment = comment
-      review.rating = rating
-      review.save()
+    review, new_created = models.Review.objects.update_or_create(
+      user=request.user,
+      product=product,
+      defaults={'comment': comment, 'rating': rating})
+    
     
     review_serializer = serializer.ReviewSerializer(review)
     return Response(review_serializer.data)

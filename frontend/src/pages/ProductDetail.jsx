@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'
 import useApi from '../components/Api';
-import { Image, Form, Button, Rate, Spin, message, Radio } from 'antd';
+import { Image, Form, Button, Rate, Select, message, Radio } from 'antd';
 import { RiShoppingCartFill, RiAddFill } from '@remixicon/react';
 import useCart from '../hooks/useCart'
 import AddToCartButton from '../components/AddToCartButton'
 import Review from '../components/Review'
+import OtherReview from '../components/OtherReview'
 
 export default function ProductDetail({ path = "404" }) {
   const { data, loading, error } = useApi(path);
@@ -30,7 +31,7 @@ export default function ProductDetail({ path = "404" }) {
     message.loading({ content: 'Adding...', key: 'cart_add' });
 
     const dataToSend = {
-      'product_id': data.id,
+      'product_id': data[0].id,
       'quantity': quantity,
       'attributes': formValues,
     }
@@ -75,25 +76,26 @@ export default function ProductDetail({ path = "404" }) {
   if (!loading && !data) return <p>Nothing..</p>;
 
   return (
-    <div className="rounded-2xl shadow-xl p-6 md:p-8 lg:p-12">
+    <>
+    <div className="rounded-2xl shadow-md inset-shadow-sm p-6 md:p-8 lg:p-12">
       {contextHolder}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
         {/* 1. Image Gallery */}
         <div className="flex flex-col gap-4">
-          <Image className="rounded-md" src={`${BASE_URL}/${data.image}`} preview={`${BASE_URL}/${data.image}`} />
+          <Image className="rounded-md" src={data[0].image} preview={data[0].image}/>
         </div>
 
         {/* Product Details */}
         <div className="flex flex-col justify-center">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{data.name}</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{data[0].name}</h1>
 
           {/* Price & Rating */}
           <div className="mt-3 flex items-baseline gap-4">
-            <p className="text-3xl font-bold text-indigo-600">रु.{data.price}</p>
+            <p className="text-3xl font-bold text-indigo-600">रु.{data[0].price}</p>
             <p className="text-xl text-gray-400 line-through">$24.99</p>
           </div>
 
-          {/* Options Sections */}
+          {/* Rate */}
           <div className="mt-8 space-y-6">
             <div>
               <Rate disabled value={3} count={5} />
@@ -101,31 +103,25 @@ export default function ProductDetail({ path = "404" }) {
           </div>
         </div>
 
-        {/* Form */}
+        {/* Options Selection */}
         <Form form={form} className="md:col-span-2" onFinish={handleFinish}>
-          <div className="md:flex md:gap-10">
-            {data.attributes && Object.entries(data.attributes).map(([attributeName, values]) => (
-              <div key={attributeName} className="flex flex-col gap-1 mb-4">
+          <div className="md:grid grid-cols-4 gap-4">
+            {data[0].attributes && Object.entries(data[0].attributes).map(([attributeName, values]) => (
+              <div key={attributeName} className="md:w-full flex flex-col gap-1 mb-4">
                 <h3 className="text-sm font-medium dark:text-gray-200"> {attributeName}</h3>
-                <Form.Item name={attributeName} rules={[{ required: true, message: `Please select a ${attributeName}!` }]}>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {values.map((value) =>
-                      value.startsWith('#') ? (
-                        <Radio.Group key={value}>
-                        <Radio.Button value={value} className="option-button !w-8 !h-8 !rounded-full !m-0 !hover:scale-110 !transition-transform duration-200 shadow-sm" 
-                          style={{ backgroundColor: value }} aria-label={`Color preview for ${value}`}/>
-                        </Radio.Group>
-                      ) : (
-                        <Radio.Group key={value}>
-                        <Radio.Button key={value} value={value} 
-                          className="option-button px-4 py-2 text-sm font-medium rounded-lg">
-                          {value}
-                        </Radio.Button>
-                        </Radio.Group>
-                      )
-                    )}
-                    </div>
+                <div className="mt-2 ">
+                  
+                <Form.Item initialValue={values[0]} name={attributeName} rules={[{ required: true, message: `Please select a ${attributeName}!` }]}>
+                  
+            <Select options={values.map((valueItem) => ({
+                value: valueItem,
+                label: valueItem.startsWith("#") ? 
+                  (<div className="flex items-center gap-2"><span className="w-4 h-4 inline-block rounded-full" style={{
+                      backgroundColor: valueItem}}/>{valueItem}</div>) : (valueItem)}))} />
+
+              
                 </Form.Item>
+                </div>
               </div>
             ))}
           </div>
@@ -140,13 +136,24 @@ export default function ProductDetail({ path = "404" }) {
       </div>
 
       {/* Description */}
-      <div>
+      <div className="mb-4">
         <h1 className="mt-6 text-lg font-medium">Description</h1>
-        <p className="mt-2 text-base text-gray-500">{data.description}</p>
+        <p className="mt-2 text-base text-gray-500">{data[0].description}</p>
       </div>
-
-      {/* Review Add */}
-      <Review product_id={data.id} />
     </div>
+
+      {/* Reviews of Others */}
+      <div className="mt-4 rounded-2xl shadow-md inset-shadow-sm p-6 md:p-8 lg:p-12">
+        {data[0].product_review.map((review)=>(
+      <OtherReview review={review} />
+      ))}
+      </div>
+      
+      <div className="mt-4 rounded-2xl shadow-md inset-shadow-sm p-6 md:p-8 lg:p-12">
+        <h1 className="text-xl mb-3">Write Your Review</h1>
+      {/* Review Add */}
+        <Review path={path} product_id={data[0].id} />
+        </div>
+    </>
   );
 }

@@ -1,13 +1,17 @@
 import {Button, Form, Input, Rate, message} from "antd"
 import useFetchWithAuth from '../hooks/useFetchWithAuth'
+import {navigate} from '../services/navigationService'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
-export default function Review({ product_id }){
+export default function Review({ product_id, path }){
   const isAuthenticated = localStorage.getItem('access_token')
   const {TextArea} = Input
   const [messageApi, contextHolder] = message.useMessage()
-  if (!isAuthenticated) return (<><Button type="primary">Login</Button></>)
+  const handleNavigate = () =>{
+    navigate(`/login?next=/${path}`, {replace: true})
+  }
+  if (!isAuthenticated) return (<Button onClick={handleNavigate} type="primary">Login</Button>)
 
   const handleFinish = async (value) => {
     try{

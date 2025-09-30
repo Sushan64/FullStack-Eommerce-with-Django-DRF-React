@@ -33,7 +33,7 @@ class User(AbstractUser):
     ('consumer', 'Consumer'),
     ('seller', 'Seller')
   )
-  role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='consumer')
+  role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="consumer")
 
 class Category(models.Model):
   name = models.CharField(max_length=20, unique=True)

@@ -12,6 +12,7 @@ export default function Profile(){
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
   const [messageApi, contextHolder] = message.useMessage()
+  let seller = false;
 
 
   // When Logout
@@ -24,7 +25,7 @@ export default function Profile(){
       })
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
-      navigate('/login', {replace: true})
+      navigate('/login?next=/profile', {replace: true})
       
     } catch (err){
       messageApi.open({
@@ -52,23 +53,30 @@ export default function Profile(){
 
   if (loading) return <p>Loading...</p>
   if (!data) return <p>Nothing...</p>
+
+  if (data.role == "seller"){
+    seller = true
+  }
+  
   
   return (
     <>
       {contextHolder}
       <h1>Hi! {data.username}</h1>
-      <h1>You are {data.role} <Link to="/upload-product">Upload</Link></h1>
-
+      {seller && <h1>You are {data.role} <Link to="/upload-product">Upload</Link></h1>}
+      
       {/* User Detail Form */}
       <UserDetailForm data={data} BASE_URL={BASE_URL} />
 
       {/* User Password Form */}
       <UserPasswordForm BASE_URL={BASE_URL} />
 
-      <MyProduct />
+      
+      {seller && <MyProduct />}
+      
       
       {/* Logout Button */}
-      <Button onClick={logout} loading={loading} type="primary">Logout</Button>
+      <Button className="mt-2" onClick={logout} loading={loading} type="primary" danger>Logout</Button>
     </>
   )
 }

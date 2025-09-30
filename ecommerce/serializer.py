@@ -34,6 +34,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
   attributes_id = serializers.PrimaryKeyRelatedField(queryset=AttributeValue.objects.all(), source="attributes", many=True, write_only=True)
   attributes = serializers.SerializerMethodField()
+  publisher= serializers.StringRelatedField(read_only=True)
   product_review = ReviewSerializer(many=True, read_only=True)
   category = serializers.SlugRelatedField(queryset=Category.objects.all(), slug_field="name")
   class Meta:
@@ -82,7 +83,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
   
   class Meta:
     model = User
-    fields = ['username', 'email', 'password1', 'password2']
+    fields = ['username', 'email', 'role', 'password1', 'password2']
 
   def validate_email(self, value):
     if User.objects.filter(email__iexact=value).exists():
@@ -95,7 +96,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     return attrs
       
   def create(self, validated_data):
-    user = User.objects.create(username=validated_data['username'], email=validated_data['email'])
+    user = User.objects.create(username=validated_data['username'], email=validated_data['email'], role=validated_data['role'])
     user.set_password(validated_data['password1'])
     user.save()
     return user

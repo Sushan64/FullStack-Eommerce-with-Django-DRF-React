@@ -1,4 +1,4 @@
-import {Form, Input, Button, message} from 'antd'
+import {Form, Input, Button, message, Select} from 'antd'
 import {useState} from 'react'
 export default function Register(){
   const BASE_URL = import.meta.env.VITE_BASE_URL
@@ -14,10 +14,13 @@ export default function Register(){
       body : JSON.stringify({
         username: values.username,
         email: values.email,
+        role: values.role,
         password1: values.password1,
         password2: values.password2
       })
     })
+    console.log(values.role)
+    console.log(response)
     if (response.ok){
       const data = await response.json()
       messageApi.open({
@@ -26,6 +29,7 @@ export default function Register(){
       })
     } else {
       const errorData = await response.json()
+      console.log(errorData)
       messageApi.open({
         type: 'error',
         content: errorData.detail || 'Registeration Faild!'
@@ -33,6 +37,7 @@ export default function Register(){
     }
     setLoading(false)
   }
+  
   return (
     <>
       {contextHolder}
@@ -45,6 +50,14 @@ export default function Register(){
         {/* Email */}
         <Form.Item label={<span className="dark:text-gray-200">Email</span>} name="email" rules={[{required: true, message:'Please enter your Email'}]}>
         <Input type="email" placeholder="username@sushan.com"/>
+        </Form.Item>
+
+        {/* Role */}
+        <Form.Item label={<span className="dark:text-gray-200">Role</span>} name="role" rules={[{required: true, message:"This can't be empty"}]}>
+        <Select defaultValue="customer" options={[
+      {value:'customer', label:'Customer'},
+      {value:'seller', label:'Seller'}
+        ]}/>
         </Form.Item>
 
         {/* Password */}

@@ -1,4 +1,5 @@
 import {Row, Col, Flex, Image} from 'antd';
+import {Trash2} from "lucide-react";
 import { useState, useEffect, useRef } from 'react'
 
 export default function CartItem({ name, price, quantity, image, getTotalPrice, selected_attributes, onDelete}){
@@ -38,7 +39,10 @@ export default function CartItem({ name, price, quantity, image, getTotalPrice, 
                 <h3 className="text-sm sm:text-base font-semibold">{name}</h3>
                 <p className="text-[13px] font-medium mt-2 flex items-center gap-2">
                   Selected: {Object.entries(selected_attributes).map(([key, value])=>(
-                   <span key={key} className="inline-block w-auto px-1 rounded-sm bg-[#ac7f48]">{value}</span>
+                   <span key={key} className="inline-block w-auto px-1 rounded-sm">
+                     {value.startsWith("#")
+                      ? (<div className="flex item-center"><span className="w-4 h-4 inline-block rounded-full" style={{ backgroundColor: value }}></span></div>)
+                     : (value)} </span>
                   ))
                   }
                 </p>
@@ -50,15 +54,9 @@ export default function CartItem({ name, price, quantity, image, getTotalPrice, 
           </div>
 
           <div className="ml-auto flex flex-col">
-            <div className="flex items-start gap-4 justify-end">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 cursor-pointer fill-slate-400 hover:fill-pink-600 inline-block" viewBox="0 0 64 64">
-                  <path d="M45.5 4A18.53 18.53 0 0 0 32 9.86 18.5 18.5 0 0 0 0 22.5C0 40.92 29.71 59 31 59.71a2 2 0 0 0 2.06 0C34.29 59 64 40.92 64 22.5A18.52 18.52 0 0 0 45.5 4ZM32 55.64C26.83 52.34 4 36.92 4 22.5a14.5 14.5 0 0 1 26.36-8.33 2 2 0 0 0 3.27 0A14.5 14.5 0 0 1 60 22.5c0 14.41-22.83 29.83-28 33.14Z" data-original="#000000"></path>
-              </svg>
+            <div className="flex h-4 items-start gap-4 justify-end">
               <button type="button" onClick={onDelete}>
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 cursor-pointer fill-slate-400 hover:fill-red-600 inline-block" viewBox="0 0 24 24">
-                  <path d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z" data-original="#000000"></path>
-                  <path d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z" data-original="#000000"></path>
-              </svg>
+              <Trash2 strokeWidth={1} size={20} />
               </button>
             </div>
 

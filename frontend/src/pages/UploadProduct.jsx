@@ -1,6 +1,8 @@
 import {Input, Form, Select, Upload, Switch, Button, InputNumber} from 'antd'
 import {useState, useEffect} from 'react'
 import useFetchWithAuth from '../hooks/useFetchWithAuth'
+import {navigate} from '../services/navigationService'
+
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 export default function UploadProduct(){
@@ -59,10 +61,13 @@ export default function UploadProduct(){
         formData.append("attributes_id", parseInt(opt, 10));
       });
       
-      await useFetchWithAuth(`${BASE_URL}/api/`, {
+      const res = await useFetchWithAuth(`${BASE_URL}/api/`, {
         method: 'POST',
-        body: formData,
+        body: formData
       }, true)
+      if(res.ok){
+        navigate(`/product/${value.slug}`)
+      }
     } catch (err){
       console.error(err)
     }

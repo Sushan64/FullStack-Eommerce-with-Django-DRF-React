@@ -26,15 +26,15 @@ export default function UserDetailForm({data, BASE_URL}){
   return(
   <Form onFinish={handleFinish}>
         {/* First Name */}
-        <Form.Item name="first_name" label="First Name">
+        <Form.Item name="first_name" label={<span className="dark:text-white">First Name</span>}>
           <Input type='text' defaultValue={data.first_name}/>
         </Form.Item>
         {/* Last Name */}
-        <Form.Item name="last_name" label="Last Name">
+        <Form.Item name="last_name" label={<span className="dark:text-white">Last Name</span>}>
           <Input type="text" defaultValue={data.last_name}/>
         </Form.Item>
         {/* Email */}
-        <Form.Item name="email" label="Email">
+        <Form.Item name="email" label={<span className="dark:text-white">Email</span>}>
           <Input type="email" defaultValue={data.email} />
         </Form.Item>
         {/* Submit Button */}
