@@ -28,8 +28,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["https://sushan-ko-pasal.onrender.com", "*"]
 #ALLOWED_HOSTS = os.environ["REPLIT_DOMAINS"].split(',') + ['localhost', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ["https://" + domain for domain in os.environ["REPLIT_DOMAINS"].split(',')]
-#CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+#CSRF_TRUSTED_ORIGINS = ["https://" + domain for domain in os.environ["REPLIT_DOMAINS"].split(',')]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000', "https://sushan-ko-pasal.onrender.com"]
 
 # Application definition
 
