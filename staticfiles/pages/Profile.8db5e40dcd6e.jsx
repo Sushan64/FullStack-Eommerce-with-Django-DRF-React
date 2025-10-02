@@ -1,0 +1,82 @@
+import {useState, useEffect} from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import {Button, message } from 'antd'
+import useFetchWithAuth from '../hooks/useFetchWithAuth'
+import UserDetailForm from '../components/UserDetailForm'
+import UserPasswordForm from '../components/UserPasswordForm'
+import MyProduct from '../components/MyProducts'
+
+const BASE_URL = import.meta.env.VITE_BASE_URL
+
+export default function Profile(){
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const [messageApi, contextHolder] = message.useMessage()
+  let seller = false;
+
+
+  // When Logout
+  const logout = async () =>{
+    setLoading(true)
+    try{
+      await useFetchWithAuth(`${BASE_URL}/logout/`,{
+        method: 'POST',
+        body: JSON.stringify({refresh: localStorage.getItem('refresh_token')})
+      })
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      navigate('/login?next=/profile', {replace: true})
+      
+    } catch (err){
+      messageApi.open({
+        type:'error',
+        content:'Failed to logout! Something went wrong.'
+      })
+    }
+    setLoading(false)
+  }
+
+
+  // Data Fetching
+  const [data, setData] = useState(null) //API Data
+  useEffect(()=>{
+    (async ()=>{
+    setLoading(true)
+    const res = await useFetchWithAuth(`${BASE_URL}/api/profile/`, {
+      method: 'GET',
+    })
+    const jsonData = await res.json()
+    setData(jsonData)
+    setLoading(false)
+    })();
+  }, [])
+
+  if (loading) return <p>Loading...</p>
+  if (!data) return <p>Nothing...</p>
+
+  if (data.role == "seller"){
+    seller = true
+  }
+  
+  
+  return (
+    <>
+      {contextHolder}
+      <h1>Hi! {data.username}</h1>
+      {seller && <h1>You are {data.role} <Link to="/upload-product">Upload</Link></h1>}
+      
+      {/* User Detail Form */}
+      <UserDetailForm data={data} BASE_URL={BASE_URL} />
+
+      {/* User Password Form */}
+      <UserPasswordForm BASE_URL={BASE_URL} />
+
+      
+      {seller && <MyProduct />}
+      
+      
+      {/* Logout Button */}
+      <Button className="mt-2" onClick={logout} loading={loading} type="primary" danger>Logout</Button>
+    </>
+  )
+}
